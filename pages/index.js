@@ -1,7 +1,8 @@
 import Head from 'next/head';
 import dynamic from 'next/dynamic';
 import LocalMediaProvider from '@/providers/LocalMediaContext';
-import BroadcastProvider from '@/providers/BroadcastContext';
+import BroadcastProvider from '@/providers/BroadcastProvider'; //yeni ekledik
+// delete import BroadcastProvider from '@/providers/BroadcastContext';
 import UserSettingsProvider from '@/providers/UserSettingsContext';
 import ModalProvider from '@/providers/ModalContext';
 import BroadcastLayoutProvider from '@/providers/BroadcastLayoutContext';
