@@ -1,3 +1,4 @@
+import { WebRTCAdaptor } from '@antmedia/webrtc_adaptor';
 import useBroadcastSDK from '@/hooks/useBroadcastSDK';
 import { createContext } from 'react';
 
