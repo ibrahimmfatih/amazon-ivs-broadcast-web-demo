@@ -13,6 +13,24 @@ import { LocalMediaContext } from '@/providers/LocalMediaContext';
 import CameraCanvas from '@/components/CameraCanvas/CameraCanvas';
 import toast from 'react-hot-toast';
 import Head from 'next/head';
+// components/BroadcastApp.js
+
+import React from 'react';
+import { useBroadcast } from '@/providers/BroadcastProvider';
+
+const BroadcastApp = () => {
+  const { webRTCAdaptor } = useBroadcast();
+
+  return (
+    <div>
+      <video id="id-of-video-element" autoplay muted></video>
+      {/* Diğer bileşenler ve içerikler */}
+    </div>
+  );
+};
+
+export default BroadcastApp;
+
 
 export default function BroadcastApp() {
   const searchParams = useSearchParams();
