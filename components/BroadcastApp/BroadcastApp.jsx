@@ -13,33 +13,11 @@ import { LocalMediaContext } from '@/providers/LocalMediaContext';
 import CameraCanvas from '@/components/CameraCanvas/CameraCanvas';
 import toast from 'react-hot-toast';
 import Head from 'next/head';
-// components/BroadcastApp.js
-
-import React from 'react';
-import { useBroadcast } from '@/providers/BroadcastProvider';
 
 const BroadcastApp = () => {
   const { webRTCAdaptor } = useBroadcast();
-
-  return (
-    <div>
-      <video id="id-of-video-element" autoplay muted></video>
-      {/* Diğer bileşenler ve içerikler */}
-    </div>
-  );
-};
-
-export default BroadcastApp;
-
-
-export default function BroadcastApp() {
-  const searchParams = useSearchParams();
-
-  const { toggleModal, modalProps, modalActive, modalContent } =
-    useContext(ModalContext);
-  const { showFullScreenCam, refreshCurrentScene } = useContext(
-    BroadcastLayoutContext
-  );
+  const { toggleModal, modalProps, modalActive, modalContent } = useContext(ModalContext);
+  const { showFullScreenCam, refreshCurrentScene } = useContext(BroadcastLayoutContext);
   const {
     isLive,
     isSupported,
@@ -48,8 +26,7 @@ export default function BroadcastApp() {
     destroyBroadcastClient,
     broadcastClientMounted,
   } = useContext(BroadcastContext);
-  const { configRef, ingestEndpoint, setIngestEndpoint, setStreamKey } =
-    useContext(UserSettingsContext);
+  const { configRef, ingestEndpoint, setIngestEndpoint, setStreamKey } = useContext(UserSettingsContext);
   const {
     setInitialDevices,
     localVideoDeviceId,
@@ -69,34 +46,28 @@ export default function BroadcastApp() {
   useEffect(() => {
     if (sdkIsStarting.current) return;
     sdkIsStarting.current = true;
-    setInitialDevices().then(
-      ({ audioDeviceId, audioStream, videoDeviceId, videoStream }) => {
-        if (!broadcastClientRef.current) {
-          createBroadcastClient({
-            config: configRef.current,
-          }).then((client) => {
-            const { width, height } = videoStream.getTracks()[0].getSettings();
-            refreshSceneRef.current = refreshCurrentScene;
-            showFullScreenCam({
-              cameraStream: enableCanvasCamera
-                ? canvasElemRef.current
-                : videoStream,
-              cameraId: videoDeviceId,
-              cameraIsCanvas: enableCanvasCamera,
-              micStream: audioStream,
-              micId: audioDeviceId,
-              showMuteIcon: false,
-            });
+    setInitialDevices().then(({ audioDeviceId, audioStream, videoDeviceId, videoStream }) => {
+      if (!broadcastClientRef.current) {
+        createBroadcastClient({
+          config: configRef.current,
+        }).then((client) => {
+          const { width, height } = videoStream.getTracks()[0].getSettings();
+          refreshSceneRef.current = refreshCurrentScene;
+          showFullScreenCam({
+            cameraStream: enableCanvasCamera ? canvasElemRef.current : videoStream,
+            cameraId: videoDeviceId,
+            cameraIsCanvas: enableCanvasCamera,
+            micStream: audioStream,
+            micId: audioDeviceId,
+            showMuteIcon: false,
           });
-        }
+        });
       }
-    );
+    });
     return () => {
-      if (broadcastClientRef.current)
-        destroyBroadcastClient(broadcastClientRef.current);
+      if (broadcastClientRef.current) destroyBroadcastClient(broadcastClientRef.current);
       cleanUpDevices();
     };
-    // run once on mount
   }, []);
 
   useEffect(() => {
@@ -104,8 +75,7 @@ export default function BroadcastApp() {
     const skQuery = searchParams.get('sk');
     const channelTypeQuery = searchParams.get('channelType');
 
-    if (uidQuery)
-      setIngestEndpoint(`${uidQuery}.global-contribute.live-video.net`);
+    if (uidQuery) setIngestEndpoint(`${uidQuery}.global-contribute.live-video.net`);
     if (skQuery) setStreamKey(skQuery);
     if (channelTypeQuery) {
       const formatted = channelType.toUpperCase();
@@ -115,6 +85,7 @@ export default function BroadcastApp() {
           break;
         case 'STANDARD':
           setChannelType('STANDARD');
+          break;
         default:
           console.error(
             `Channel type must be STANDARD, BASIC. The channel type you provided is ${channelType}. The default value of BASIC has been set`
@@ -125,15 +96,12 @@ export default function BroadcastApp() {
   }, [searchParams]);
 
   useEffect(() => {
-    if (broadcastClientMounted)
-      broadcastClientRef.current.attachPreview(previewRef.current);
+    if (broadcastClientMounted) broadcastClientRef.current.attachPreview(previewRef.current);
     return () => {
-      if (broadcastClientRef.current)
-        broadcastClientRef.current.detachPreview();
+      if (broadcastClientRef.current) broadcastClientRef.current.detachPreview();
     };
   }, [broadcastClientMounted]);
 
-  // React to webcam device changes if the canvas camera is enabled.
   useEffect(() => {
     if (!broadcastClientMounted || !enableCanvasCamera) return;
     const { width, height } = broadcastClientRef.current.getCanvasDimensions();
@@ -144,36 +112,25 @@ export default function BroadcastApp() {
 
   useEffect(() => {
     if (!isSupported) {
-      toast.error(
-        (t) => {
-          return (
-            <div className='flex items-center'>
-              <span className='pr-4 grow'>
-                This browser is not fully supported. Certain features may not
-                work as expected.{' '}
-                <a
-                  href='https://docs.aws.amazon.com/ivs/latest/LowLatencyUserGuide/broadcast.html#broadcast-platform-requirements'
-                  target='_blank'
-                  rel='noreferrer noopener'
-                  className='text-primaryAlt dark-theme:text-primary hover:text-primary hover:dark-theme:text-primaryAlt hover:underline underline-offset-1'
-                >
-                  Learn more
-                </a>
-              </span>
-            </div>
-          );
-        },
-        {
-          id: 'BROWSER_SUPPORT',
-          duration: Infinity,
-        }
-      );
+      toast.error((t) => (
+        <div className='flex items-center'>
+          <span className='pr-4 grow'>
+            This browser is not fully supported. Certain features may not work as expected.{' '}
+            <a
+              href='https://docs.aws.amazon.com/ivs/latest/LowLatencyUserGuide/broadcast.html#broadcast-platform-requirements'
+              target='_blank'
+              rel='noreferrer noopener'
+              className='text-primaryAlt dark-theme:text-primary hover:text-primary hover:dark-theme:text-primaryAlt hover:underline underline-offset-1'
+            >
+              Learn more
+            </a>
+          </span>
+        </div>
+      ));
     }
   }, [isSupported]);
 
-  const title = `Amazon IVS – Web Broadcast Tool - ${
-    isLive ? 'LIVE' : 'Offline'
-  }`;
+  const title = `Amazon IVS – Web Broadcast Tool - ${isLive ? 'LIVE' : 'Offline'}`;
 
   return (
     <>
@@ -186,11 +143,7 @@ export default function BroadcastApp() {
         <StreamPreview previewRef={previewRef} />
         <ControlBar />
         {enableCanvasCamera && (
-          <CameraCanvas
-            width={canvasWidth}
-            height={canvasHeight}
-            videoStream={videoStream}
-          />
+          <CameraCanvas width={canvasWidth} height={canvasHeight} videoStream={videoStream} />
         )}
       </div>
       <Modal show={modalActive} onClose={toggleModal} {...modalProps}>
@@ -198,4 +151,6 @@ export default function BroadcastApp() {
       </Modal>
     </>
   );
-}
+};
+
+export default BroadcastApp;
